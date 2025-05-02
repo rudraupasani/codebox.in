@@ -29,10 +29,10 @@ const Navbar = () => {
               <Link to="/chatbox" className="hover:text-blue-400 transition duration-300">Chatbox</Link>
             </li>
             <li>
-              <Link to="/about" className="hover:text-blue-400 transition duration-300">About</Link>
+              <Link to="https://devuno.onrender.com/playground" className="hover:text-blue-400 transition duration-300">Code Reviewer</Link>
             </li>
             <li>
-              <Link to="/contact" className="hover:text-blue-400 transition duration-300">Contact</Link>
+              <Link to="/about" className="hover:text-blue-400 transition duration-300">About</Link>
             </li>
             <li>
               <Link to="https://www.instagram.com/rudraupasani.in/" className="hover:text-blue-400 py-3 px-10 rounded-xl bg-gray-900 text-white transition duration-300">Join US</Link>
@@ -66,13 +66,13 @@ const Navbar = () => {
               <Link to="/chatbox" className="hover:text-blue-400 transition">Chatbox</Link>
             </li>
             <li>
+              <Link to="https://devuno.onrender.com/playground" className="hover:text-blue-400 transition duration-300">Code Reviewer</Link>
+            </li>
+            <li>
               <Link to="/about" className="hover:text-blue-400 transition">About</Link>
             </li>
-            <li>
-              <Link to="/contact"  className="hover:text-blue-400 transition">Contact</Link>
-            </li>
-            <li>
-              <Link to="/login"  className="hover:text-blue-400 transition">Join US</Link>
+           <li>
+              <Link to="https://www.instagram.com/rudraupasani.in/" className="hover:text-blue-400 transition">Join US</Link>
             </li>
           </ul>
         </motion.div>

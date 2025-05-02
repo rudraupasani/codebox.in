@@ -16,7 +16,7 @@ const Details = () => {
         Writes, brainstorms, edits, and explores ideas with you
       </motion.h1>
       
-      <Link className="text-blue-500 text-md lg:text-xl underline" to="/chatbot">Explore Now</Link>
+      <Link className="text-blue-500 text-md lg:text-xl underline" to="/chatbox">Explore Now</Link>
 
       <motion.div
         whileInView={{ opacity: 1, x: 0 }}
@@ -25,7 +25,7 @@ const Details = () => {
         transition={{ duration: 1, ease: 'easeOut', delay: 0.4 }}
       >
         <motion.img
-          src="https://itgnthvglnbnwfrkrqvj.supabase.co/storage/v1/object/sign/clouddrive/photo/Screenshot%202025-04-27%20002810.png?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InN0b3JhZ2UtdXJsLXNpZ25pbmcta2V5X2U4ZGNmNzI1LTM4M2YtNDFjOC05NWExLTM3NGFlYzQxMDUwNyJ9.eyJ1cmwiOiJjbG91ZGRyaXZlL3Bob3RvL1NjcmVlbnNob3QgMjAyNS0wNC0yNyAwMDI4MTAucG5nIiwiaWF0IjoxNzQ1Njk0NjUyLCJleHAiOjE5MDMzNzQ2NTJ9.ZZdi3rfFzJCK4p83qN-Ygl2eczLClUFUncFGVAcZsO0"
+          src="https://itgnthvglnbnwfrkrqvj.supabase.co/storage/v1/object/sign/clouddrive/photo/Screenshot%202025-05-02%20112749.png?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InN0b3JhZ2UtdXJsLXNpZ25pbmcta2V5X2U4ZGNmNzI1LTM4M2YtNDFjOC05NWExLTM3NGFlYzQxMDUwNyJ9.eyJ1cmwiOiJjbG91ZGRyaXZlL3Bob3RvL1NjcmVlbnNob3QgMjAyNS0wNS0wMiAxMTI3NDkucG5nIiwiaWF0IjoxNzQ2MTY1NDk5LCJleHAiOjE5MDM4NDU0OTl9.I3oV1CHlC3WYV6oIPiox7OgUCVCoMHpXabJMT2V6Q-E"
           alt="AI Brainstorming"
           className="w-[1000px] mt-5 h-auto border-2 border-black rounded-2xl shadow-xl hover:scale-105 transition-transform duration-300"
         />
