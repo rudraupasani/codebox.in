@@ -114,7 +114,7 @@ const ChatPage = () => {
       </div>
 
       {/* Chatbox */}
-      <div className="w-full max-w-5xl flex flex-col h-[70vh] md:h-[84vh] overflow-hidden mt-4 bg-gray-800/30 rounded-2xl backdrop-blur-xl border border-white/10 shadow-lg">
+      <div className="w-full max-w-5xl flex flex-col h-[80vh] md:h-[84vh] overflow-hidden mt-4 bg-gray-800/30 rounded-2xl backdrop-blur-xl border border-white/10 shadow-lg">
         {/* Messages */}
         <div className="flex-1 p-6 overflow-y-auto space-y-4">
           {messages.map((msg, idx) => (
@@ -132,65 +132,68 @@ const ChatPage = () => {
                   <Bot size={18} />
                 </div>
               )}
+
               <div
                 className={`px-4 py-3 rounded-2xl max-w-xl text-sm leading-relaxed shadow-md ${
                   msg.sender === "user"
-                    ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-br-none"
-                    : "bg-white/10 text-gray-100 rounded-bl-none border border-white/10"
+                    ?" text-white rounded-br-none"
+                    : " text-gray-100 rounded-bl-none border border-white/10"
                 }`}
               >
-                {msg.sender === "bot" ? (
-                  <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    components={{
-                      code({ inline, className, children, ...props }) {
-                        const match = /language-(\w+)/.exec(className || "");
-                        return !inline && match ? (
-                          <SyntaxHighlighter
-                            style={oneDark}
-                            language={match[1]}
-                            PreTag="div"
-                            className="rounded-lg p-3 text-sm shadow-inner"
-                            {...props}
-                          >
-                            {String(children).replace(/\n$/, "")}
-                          </SyntaxHighlighter>
-                        ) : (
-                          <code className="bg-gray-800/60 px-1.5 py-0.5 rounded text-blue-300 text-xs" {...props}>
-                            {children}
-                          </code>
-                        );
-                      },
-                      h1: ({ children }) => (
-                        <h1 className="text-2xl font-bold text-blue-300 mb-2">{children}</h1>
-                      ),
-                      p: ({ children }) => (
-                        <p className="mb-2 leading-relaxed text-gray-200">{children}</p>
-                      ),
-                      strong: ({ children }) => (
-                        <strong className="text-blue  -500">{children}</strong>
-                      ),
-                      a: ({ children, ...props }) => (
-                        <a
-                          className="text-blue-400 underline hover:text-blue-300"
-                          target="_blank"
-                          rel="noopener noreferrer"
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    code({ inline, className, children, ...props }) {
+                      const match = /language-(\w+)/.exec(className || "");
+                      return !inline && match ? (
+                        <SyntaxHighlighter
+                          style={oneDark}
+                          language={match[1]}
+                          PreTag="div"
+                          className="rounded-lg p-3 text-sm shadow-inner"
+                          {...props}
+                        >
+                          {String(children).replace(/\n$/, "")}
+                        </SyntaxHighlighter>
+                      ) : (
+                        <code
+                          className="bg-gray-800/60 px-1.5 py-0.5 rounded text-blue-300 text-xs"
                           {...props}
                         >
                           {children}
-                        </a>
-                      ),
-                      li: ({ children }) => (
-                        <li className="list-disc ml-6 text-gray-300">{children}</li>
-                      ),
-                    }}
-                  >
-                    {msg.text}
-                  </ReactMarkdown>
-                ) : (
-                  msg.text
-                )}
+                        </code>
+                      );
+                    },
+                    h1: ({ children }) => (
+                      <h1 className="text-2xl font-bold text-blue-300 mb-2">
+                        {children}
+                      </h1>
+                    ),
+                    p: ({ children }) => (
+                      <p className="mb-2 leading-relaxed text-gray-200">{children}</p>
+                    ),
+                    strong: ({ children }) => (
+                      <strong className="text-blue-400">{children}</strong>
+                    ),
+                    a: ({ children, ...props }) => (
+                      <a
+                        className="text-blue-400 underline hover:text-blue-300"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        {...props}
+                      >
+                        {children}
+                      </a>
+                    ),
+                    li: ({ children }) => (
+                      <li className="list-disc ml-6 text-gray-300">{children}</li>
+                    ),
+                  }}
+                >
+                  {msg.text}
+                </ReactMarkdown>
               </div>
+
               {msg.sender === "user" && (
                 <div className="w-9 h-9 flex items-center justify-center rounded-full bg-blue-500 text-white shadow-md">
                   <User size={18} />
@@ -221,19 +224,22 @@ const ChatPage = () => {
         </div>
 
         {/* Input */}
-        <div className="p-4 border-t border-white/10 flex items-center gap-3 bg-black/40 backdrop-blur-xl rounded-2xl shadow-inner">
-          <input
-            type="text"
+        <div className="p-2 border-t border-white/10 flex items-center gap-1 bg-black/40 backdrop-blur-xl rounded-2xl shadow-inner">
+          <textarea
             placeholder="Message Codebox AI..."
             value={text}
+            disabled={loading}
             onChange={(e) => setText(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSend()}
-            className="flex-1 bg-white/10 text-white px-4 py-3 rounded-xl outline-none border border-white/10 focus:border-blue-500 transition-all duration-300 placeholder-gray-400 shadow-md"
-          />
+            onKeyDown={(e) =>
+              e.key === "Enter" && !e.shiftKey && (e.preventDefault(), handleSend())
+            }
+            rows={1}
+            className="flex-1 resize-y bg-white/10 text-white px-4 py-3 rounded-xl outline-none border border-white/10 focus:border-blue-500 transition-all duration-300 placeholder-gray-400 shadow-md"
+          ></textarea>
           <button
             onClick={handleSend}
             disabled={loading}
-            className="p-3 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl text-white shadow-lg hover:opacity-90 disabled:opacity-50 transition"
+            className="p-4 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl text-white shadow-lg hover:opacity-90 disabled:opacity-50 transition"
           >
             <Send size={18} />
           </button>

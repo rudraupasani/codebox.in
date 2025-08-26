@@ -1,6 +1,6 @@
 // Modern Navbar Component for CODEBOX.AI
 import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 const Home = () => {
@@ -72,44 +72,18 @@ const Home = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-black mb-2 leading-tight">
+              <h1 className="text-5xl md:text-7xl lg:text-8xl font-black mb-2 leading-tight text-white">
                 <motion.span
                   className="block"
-                  animate={{ 
-                    backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"]
-                  }}
-                  transition={{ 
-                    duration: 4, 
-                    repeat: Infinity, 
-                    ease: "easeInOut" 
-                  }}
-                  style={{
-                    background: "linear-gradient(45deg, #ffffff, #60a5fa, #a855f7, #ffffff)",
-                    backgroundSize: "300% 300%",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    backgroundClip: "text"
-                  }}
+                  animate={{ opacity: [0.8, 1, 0.8] }}
+                  transition={{ duration: 3, repeat: Infinity }}
                 >
                   Build Smarter
                 </motion.span>
                 <motion.span
-                  className="block"
-                  animate={{ 
-                    textShadow: [
-                      "0 0 30px rgba(59, 130, 246, 0.6)",
-                      "0 0 60px rgba(147, 51, 234, 0.8)",
-                      "0 0 30px rgba(59, 130, 246, 0.6)"
-                    ]
-                  }}
+                  className="block text-blue-400"
+                  animate={{ opacity: [0.8, 1, 0.8] }}
                   transition={{ duration: 3, repeat: Infinity }}
-                  style={{
-                    background: "linear-gradient(45deg, #60a5fa, #a855f7, #ec4899, #06b6d4)",
-                    backgroundSize: "300% 300%",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    backgroundClip: "text"
-                  }}
                 >
                   With CODEBOX.AI
                 </motion.span>
@@ -125,39 +99,9 @@ const Home = () => {
             >
               <p className="text-md md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
                 Transform your development workflow with intelligent code assistance, 
-                real-time collaboration, and <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 font-semibold">next-generation AI tools</span>.
+                real-time collaboration, and <span className="text-blue-400 font-semibold">next-generation AI tools</span>.
               </p>
             </motion.div>
-
-            {/* Technology Stack */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.2 }}
-              className="space-y-4"
-            >
-              <p className="text-gray-400 text-sm font-medium tracking-wide uppercase">
-                Powered By Leading AI Technologies
-              </p>
-              <div className="flex flex-wrap justify-center gap-6">
-                {["GPT-4", "Claude", " Gemini", "Deepseek", "Grok",].map((tech, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5, delay: 1.3 + (index * 0.1) }}
-                    whileHover={{ 
-                      scale: 1.05,
-                      boxShadow: "0 10px 30px rgba(59, 130, 246, 0.3)"
-                    }}
-                    className="px-6 py-3 bg-gray-800/60 backdrop-blur-sm rounded-2xl border border-gray-700/50 text-gray-300 font-medium hover:border-blue-500/50 transition-all duration-300"
-                  >
-                    {tech}
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-
             {/* Enhanced CTA Section */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -180,7 +124,6 @@ const Home = () => {
         </motion.div>
       </div>
     </div>
-
   );
 };
 

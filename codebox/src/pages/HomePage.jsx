@@ -3,6 +3,8 @@ import Navbar from '../Componets/Navbar'
 import Home from '../Componets/Home'
 import Details from '../Componets/Details'
 import Footer from '../Componets/Footer'
+import Features from './Features'
+import About from '../Componets/About'
 
 const HomePage = () => {
   return (
@@ -10,6 +12,7 @@ const HomePage = () => {
         <Navbar />
         <Home/>
         <Details/>
+        <Features />
         <Footer/>
     </div>
   )

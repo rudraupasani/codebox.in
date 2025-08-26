@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bot, Menu, X } from "lucide-react";
-import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
@@ -11,9 +10,9 @@ const Navbar = () => {
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "Chat", path: "/chatbox" },
-    { name: "Features", path: "/features" },
+    { name: "Features", path: "#features" },
     { name: "API", path: "/api" },
-    { name: "About", path: "/about" },
+    { name: "About", path: "#about" },
   ];
 
   return (
@@ -47,16 +46,12 @@ const Navbar = () => {
                 transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
                 className="absolute inset-1 bg-gradient-to-r from-cyan-400 to-blue-600 rounded-lg opacity-30"
               />
-              <Bot size={50} className="text-white relative z-10" />
+              <Bot
+                onClick={() => window.scrollTo(0 ,0 )}
+                size={50}
+                className="text-white relative z-10"
+              />
             </motion.div>
-            <div className="flex flex-col">
-              <motion.span
-                onClick={() => navigate("/") &&  window.scrollTo(0, 0) }
-                className="text-2xl md:text-3xl font-black tracking-tight bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
-              >
-                CODEBOX.AI
-              </motion.span>
-            </div>
           </motion.div>
 
           {/* Desktop Navigation */}
@@ -67,16 +62,27 @@ const Navbar = () => {
                 whileHover={{ scale: 1.1, y: -2 }}
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
               >
-                <Link
-                  onClick={() => window.scrollTo(0, 0)}
-                  to={link.path}
-                  className="relative text-gray-300 hover:text-white transition-colors duration-300 group"
-                >
-                  {link.name}
-                  <motion.div
-                    className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"
-                  />
-                </Link>
+                {link.path === "/chatbox" ? (
+                  <button
+                    onClick={() => {
+                      window.scrollTo(0, 0);
+                      navigate("/chatbox");
+                    }}
+                    className="relative text-gray-300 hover:text-white transition-colors duration-300 group"
+                  >
+                    {link.name}
+                    <motion.div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300" />
+                  </button>
+                ) : (
+                  <a
+                    href={link.path}
+                    onClick={() => window.scrollTo(0, 0)}
+                    className="relative text-gray-300 hover:text-white transition-colors duration-300 group"
+                  >
+                    {link.name}
+                    <motion.div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300" />
+                  </a>
+                )}
               </motion.li>
             ))}
           </ul>
@@ -132,16 +138,31 @@ const Navbar = () => {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
                   >
-                    <Link
-                      to={link.path}
-                      onClick={() => window.scrollTo(0, 0) && setIsOpen(false)}
-                      className="flex items-center gap-3 text-gray-300 hover:text-white p-3 rounded-xl hover:bg-white/10 transition-all duration-300 group"
-                    >
-                      <motion.div
-                        className="w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                      />
-                      <span className="font-medium">{link.name}</span>
-                    </Link>
+                    {link.path === "/chatbox" ? (
+                      <button
+                        onClick={() => {
+                          window.scrollTo(0, 0);
+                          navigate("/chatbox");
+                          setIsOpen(false);
+                        }}
+                        className="flex items-center gap-3 text-gray-300 hover:text-white p-3 rounded-xl hover:bg-white/10 transition-all duration-300 group w-full text-left"
+                      >
+                        <motion.div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <span className="font-medium">{link.name}</span>
+                      </button>
+                    ) : (
+                      <a
+                        href={link.path}
+                        onClick={() => {
+                          window.scrollTo(0, 0);
+                          setIsOpen(false);
+                        }}
+                        className="flex items-center gap-3 text-gray-300 hover:text-white p-3 rounded-xl hover:bg-white/10 transition-all duration-300 group"
+                      >
+                        <motion.div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <span className="font-medium">{link.name}</span>
+                      </a>
+                    )}
                   </motion.li>
                 ))}
               </ul>
@@ -156,7 +177,10 @@ const Navbar = () => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-xl"
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => {
+                    setIsOpen(false);
+                    navigate("/chatbox");
+                  }}
                 >
                   Get Started Free
                 </motion.button>

@@ -41,8 +41,9 @@ const features = [
 const Features = () => {
   return (
     <>
-    <Navbar />
-    <div className="min-h-screen mt-5 bg-gradient-to-b from-gray-900 via-gray-800 to-black text-white flex flex-col items-center py-20 px-6">
+    <div
+    id="features"
+    className="min-h-screen  bg-gradient-to-b from-gray-900 via-gray-800 to-black text-white flex flex-col items-center py-20 px-6">
       {/* Title */}
       <motion.h1
         initial={{ opacity: 0, y: -40 }}
@@ -82,7 +83,6 @@ const Features = () => {
         ))}
       </div>
     </div>
-    <Footer />
     </>
   );
 };
