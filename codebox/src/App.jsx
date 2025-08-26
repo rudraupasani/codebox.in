@@ -3,14 +3,15 @@ import Home from './Componets/Home';
 import { Route, Routes } from 'react-router-dom';
 import Chatbox from './Componets/Chatbox';
 import About from './Componets/About';
+import HomePage from './pages/HomePage';
 
 const App = () => {
   return (
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/chatbox" element={<Chatbox />} />
         <Route path="/about" element={<About />} />
-        <Route path="*" element={<Home />} />
+        <Route path="*" element={<HomePage />} />
       </Routes>
   );
 };

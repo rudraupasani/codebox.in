@@ -1,108 +1,172 @@
-import React, { useState, useEffect } from 'react';
-import Navbar from './Navbar';
-import axios from 'axios';
-import { motion } from 'framer-motion';
+import React, { useState, useRef, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Send, Bot, User } from "lucide-react";
+import { Link } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
-const Chatbox = () => {
-    const [text, setText] = useState('');
-    const [messages, setMessages] = useState([]);
+const ChatPage = () => {
+  const [messages, setMessages] = useState([
+    { sender: "bot", text: "👋 Hi, I’m Codebox AI. How can I help you today?" },
+  ]);
+  const [text, setText] = useState("");
+  const [loading, setLoading] = useState(false);
+  const messagesEndRef = useRef(null);
 
-    useEffect(() => {
-        setMessages([
-            {
-                sender: 'ai',
-                content: 'How Can CODEBOX Help You Today?',
-            }
-        ]);
-    }, []);
+  // Scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
-    const handleSend = async () => {
-        if (!text.trim()) return;
+  const handleSend = async () => {
+    if (!text.trim()) return;
 
-        const userMessage = {
-            sender: 'user',
-            content: text.trim(),
-        };
+    const newUserMessage = { sender: "user", text };
+    setMessages((prev) => [...prev, newUserMessage]);
+    setText("");
+    setLoading(true);
 
-        setMessages(prev => [...prev, userMessage]);
-        setText('');
+    try {
+      // Only take the last 10 messages for context
+      const recentMessages = [...messages, newUserMessage].slice(-10);
 
-        try {
-            const response = await axios.post('http://localhost:3000/geminichat', {
-                model: 'gemini-2.0-flash',
-                messages: [
-                    { role: 'user', content: text.trim() },
-                ],
-                temperature: 0.7,
-                maxTokens: 100,
-                topP: 1,
-                topK: 40,
-                stopSequences: ['\n'],
-                prompt: text.trim(),
-            });
+      const conversationPrompt =
+        recentMessages
+          .map((msg) => `${msg.sender === "user" ? "User" : "Bot"}: ${msg.text}`)
+          .join("\n") + `\nUser: ${text}\nBot:`;
 
-            const aiReply = {
-                sender: 'ai',
-                content: response.data.response,
-            };
-
-            setMessages(prev => [...prev, aiReply]);
-        } catch (error) {
-            console.error('Error fetching AI response:', error);
-            const errorMessage = {
-                sender: 'ai',
-                content: 'Sorry, I am unable to process your request at the moment.',
-            };
-            setMessages(prev => [...prev, errorMessage]);
+      const response = await fetch(
+        "https://codebox-d3m9.onrender.com/geminichat",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt: conversationPrompt }),
         }
-    };
+      );
 
-    return (
-        <div className="flex flex-col items-center min-h-screen w-screen bg-gradient-to-br from-black to-gray-900 p-4 gap-8">
-            <Navbar />
-            <motion.h1
-             initial={{ opacity: 0, y: 10 }}
-             animate={{ opacity: 1, y: 0 }}
-             transition={{ duration: 0.4, delay: 1 }}
-            
-            className="text-xl lg:text-4xl font-bold text-white mb-4 mt-14">Chat with AI</motion.h1>
+      const data = await response.json();
 
-            <div className="flex flex-col w-full h-140 rounded-lg p-6 shadow-lg overflow-x-auto">
-                <div className="flex flex-col gap-4 overflow-y-auto h-screen lg:max-h-[400px] mb-4 scrollbar-none">
-                    {messages.map((message, index) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.4, delay: 1 }}
-                            className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                        >
-                            <div className={`p-4 ${message.sender === 'user' ? 'bg-blue-900' : 'bg-gray-700'} text-white rounded-lg max-w-md lgmax-w-xs overflow-hidden whitespace-pre-wrap break-words`}>
-                                {message.sender === 'user' ? `You : ${message.content}` : `AI : ${message.content}`}
-                            </div>
-                        </motion.div>
-                    ))}
+      if (!response.ok) {
+        // Special handling for quota exceeded (429)
+        if (response.status === 429) {
+          setMessages((prev) => [
+            ...prev,
+            {
+              sender: "bot",
+              text: "⚠️ You’ve hit the request limit. Please wait a moment before trying again.",
+            },
+          ]);
+        } else {
+          throw new Error(data.error || "Server error");
+        }
+        return;
+      }
+
+      const botText = data.response || "🤖 Sorry, I didn't understand that.";
+      setMessages((prev) => [...prev, { sender: "bot", text: botText }]);
+    } catch (err) {
+      console.error(err);
+      setMessages((prev) => [
+        ...prev,
+        { sender: "bot", text: `⚠️ ${err.message}` },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex flex-col items-center justify-center p-4">
+      <div className="bg-gray-800/80 backdrop-blur-lg rounded-2xl shadow-lg p-6 w-full max-w-4xl flex items-center justify-between">
+        <h1 className="text-sm md:text-2xl font-bold text-white">
+          Chat with Codebox AI
+        </h1>
+        <Link to="/" className="text-blue-400 hover:underline">
+          Go to Home
+        </Link>
+      </div>
+
+      <div className="w-full max-w-5xl flex flex-col h-[80vh] overflow-hidden mt-4 bg-gray-800/20 rounded-2xl backdrop-blur-lg">
+        {/* Messages */}
+        <div className="flex-1 p-6 overflow-y-auto space-y-4">
+          {messages.map((msg, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className={`flex items-start gap-3 ${
+                msg.sender === "user" ? "justify-end" : "justify-start"
+              }`}
+            >
+              {msg.sender === "bot" && (
+                <div className="w-8 h-8 flex items-center justify-center rounded-full bg-green-500 text-white">
+                  <Bot size={18} />
                 </div>
-
-                {/* Input Area */}
-                <div className="flex fixed bottom-5 left-0 w-full p-4 rounded-lg shadow-lg">
-                    <input
-                        type="text"
-                        placeholder="Type your message..."
-                        className="flex-1 p-4 rounded-lg bg-gray-900 rounded-r-none text-white outline-none"
-                        onChange={(e) => setText(e.target.value)}
-                        value={text}
-                    />
-                    <button
-                        onClick={handleSend}
-                        className="bg-blue-900 rounded-l-none cursor-pointer hover:bg-blue-900 text-white p-4 rounded-lg"
-                    >
-                        Send
-                    </button>
+              )}
+              <div
+                className={`px-4 py-2 rounded-2xl max-w-auto text-sm break-words ${
+                  msg.sender === "user"
+                    ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-br-none"
+                    : "bg-white/20 text-white rounded-bl-none overflow-auto"
+                }`}
+              >
+                {msg.sender === "bot" ? (
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {msg.text}
+                  </ReactMarkdown>
+                ) : (
+                  msg.text
+                )}
+              </div>
+              {msg.sender === "user" && (
+                <div className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white">
+                  <User size={18} />
                 </div>
-            </div>
+              )}
+            </motion.div>
+          ))}
+
+          {/* Loading indicator */}
+          {loading && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex items-start gap-3"
+            >
+              <div className="w-8 h-8 flex items-center justify-center rounded-full bg-green-500 text-white animate-pulse">
+                <Bot size={18} />
+              </div>
+              <div className="px-4 py-2 rounded-2xl max-w-xs text-sm bg-white/20 text-white rounded-bl-none">
+                Typing...
+              </div>
+            </motion.div>
+          )}
+
+          <div ref={messagesEndRef} />
         </div>
-    );
+
+        {/* Input */}
+        <div className="p-4 border-t border-white/20 flex items-center gap-3 bg-black/40 backdrop-blur-lg rounded-2xl">
+          <input
+            type="text"
+            placeholder="Message Codebox AI..."
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSend()}
+            className="flex-1 bg-white/10 text-white px-4 py-2 rounded-xl outline-none border border-white/20 focus:border-blue-500 transition-all duration-300 placeholder-gray-400"
+          />
+          <button
+            onClick={handleSend}
+            disabled={loading}
+            className="p-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl text-white shadow-lg hover:opacity-90 disabled:opacity-50"
+          >
+            <Send size={18} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
-export default Chatbox;
+export default ChatPage;

@@ -1,7 +1,7 @@
-import React from 'react'
-import Navbar from './Navbar'
-import Footer from './Footer'
-import { motion } from 'framer-motion'
+import React from "react";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
+import { motion } from "framer-motion";
 
 const About = () => {
   return (
@@ -11,91 +11,76 @@ const About = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
-        className='flex flex-col justify-center items-center min-h-screen w-screen bg-gradient-to-br from-black to-gray-900 p-4 gap-8'
+        className="flex flex-col justify-start items-center min-h-screen w-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black p-6 gap-16 pt-32"
       >
+        {/* Heading */}
         <motion.h1
-          initial={{ y: -30, opacity: 0 }}
+          initial={{ y: -40, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 1 }}
-          className=' mt-20 text-white text-3xl font-bold'
+          transition={{ delay: 0.3 }}
+          className="text-white text-4xl md:text-5xl font-extrabold tracking-wide text-center"
         >
-          About Us
+          About <span className="text-blue-500">CodeBox AI</span>
         </motion.h1>
 
+        {/* Description */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className='text-white text-lg text-center max-w-2xl'
+          transition={{ delay: 0.5 }}
+          className="text-gray-300 text-lg md:text-xl text-center max-w-4xl leading-relaxed"
         >
-          We are a team of passionate developers and designers dedicated to creating innovative solutions that make your life easier. Our mission is to provide high-quality products and services that meet the needs of our users.
+          CodeBox AI is your intelligent coding partner.  
+          We empower developers, startups, and businesses with AI-driven tools 
+          that accelerate productivity, simplify workflows, and spark innovation.  
+          From generating high-quality code to providing smart insights, our mission 
+          is to help you build the future faster and smarter.
         </motion.p>
 
+        {/* Vision / Mission / Values */}
         <motion.div
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 1 }}
-          className='flex flex-col md:flex-row gap-4'
+          transition={{ delay: 0.7 }}
+          className="grid md:grid-cols-3 gap-8 w-full max-w-6xl"
         >
           <motion.div
-            whileHover={{ scale: 1.03 }}
-            className='bg-gray-800 p-4 rounded-lg shadow-lg w-full max-w-sm'
+            whileHover={{ scale: 1.05 }}
+            className="bg-gray-800/60 p-6 rounded-2xl shadow-xl backdrop-blur-md hover:shadow-blue-500/20 transition"
           >
-            <h2 className='text-white text-xl font-semibold'>Our Vision</h2>
-            <p className='text-gray-400'>To be a leader in the tech industry by providing cutting-edge solutions that empower individuals and businesses.</p>
+            <h2 className="text-white text-2xl font-semibold mb-2">Our Vision</h2>
+            <p className="text-gray-400">
+              To make AI the ultimate coding companion for developers worldwide,
+              bridging creativity and efficiency.
+            </p>
           </motion.div>
+
           <motion.div
-            whileHover={{ scale: 1.03 }}
-            className='bg-gray-800 p-4 rounded-lg shadow-lg w-full max-w-sm'
+            whileHover={{ scale: 1.05 }}
+            className="bg-gray-800/60 p-6 rounded-2xl shadow-xl backdrop-blur-md hover:shadow-blue-500/20 transition"
           >
-            <h2 className='text-white text-xl font-semibold'>Our Mission</h2>
-            <p className='text-gray-400'>To create user-friendly applications that enhance productivity and creativity.</p>
+            <h2 className="text-white text-2xl font-semibold mb-2">Our Mission</h2>
+            <p className="text-gray-400">
+              To deliver AI-powered solutions that reduce repetitive tasks and
+              free developers to focus on innovation.
+            </p>
           </motion.div>
+
           <motion.div
-            whileHover={{ scale: 1.03 }}
-            className='bg-gray-800 p-4 rounded-lg shadow-lg w-full max-w-sm'
+            whileHover={{ scale: 1.05 }}
+            className="bg-gray-800/60 p-6 rounded-2xl shadow-xl backdrop-blur-md hover:shadow-blue-500/20 transition"
           >
-            <h2 className='text-white text-xl font-semibold'>Our Values</h2>
-            <p className='text-gray-400'>We value innovation, integrity, and customer satisfaction. We strive to exceed expectations and deliver exceptional results.</p>
+            <h2 className="text-white text-2xl font-semibold mb-2">Our Values</h2>
+            <p className="text-gray-400">
+              We value innovation, speed, and trust—ensuring AI enhances
+              creativity without replacing the human touch.
+            </p>
           </motion.div>
-        </motion.div>
-
-        <motion.div
-          initial={{ y: 40, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 1 }}
-          whileInView={true}
-          className='flex flex-col justify-center items-center w-full bg-gradient-to-br from-black to-gray-900 p-4 gap-8'
-        >
-          <h1 className='text-white text-3xl font-bold'>Contect Us</h1>
-          <form className='lg:w-100' action="">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1 }}
-              whileInView={true}
-
-              className='flex flex-col gap-4'
-            >
-              <input type="text" placeholder='Name' className='h-12 p-2 w-full   rounded-lg bg-gray-800 text-white' />
-              <input type="email" placeholder='Email' className='h-12 p-2 rounded-lg bg-gray-800 text-white' />
-              <textarea placeholder='Message' className='p-2 h-12 rounded-lg bg-gray-800 lg:w-100 text-white'></textarea>
-              <motion.button
-                whileTap={{ scale: 0.97 }}
-                whileInView={true}
-
-                type="submit"
-                className='bg-blue-600 p-2 rounded-lg'
-              >
-                Send
-              </motion.button>
-            </motion.div>
-          </form>
         </motion.div>
       </motion.div>
       <Footer />
     </>
-  )
-}
+  );
+};
 
-export default About
+export default About;
