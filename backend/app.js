@@ -31,20 +31,21 @@ app.get("/listmodels", async (req, res) => {
 
 // ✅ Gemini Chat Route
 app.post("/chatbot", async (req, res) => {
-  const { prompt } = req.body;
+  const { prompt, model } = req.body; // Allow client to pass a model
   if (!prompt) return res.status(400).json({ error: "Prompt is required" });
 
   try {
-    const model = "models/gemini-1.5-flash"; // you can switch via /listmodels
+    // Default to a free/fast model if not provided
+    const selectedModel = model || "models/gemini-2.0-flash";
 
     const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/${model}:generateContent?key=${API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/${selectedModel}:generateContent?key=${API_KEY}`,
       { contents: [{ parts: [{ text: prompt }] }] }
     );
 
     const text = response.data.candidates?.[0]?.content?.parts?.[0]?.text;
     if (text) {
-      res.json({ response: text });
+      res.json({ response: text, model: selectedModel });
     } else {
       res.status(500).json({ error: "No response text returned by Gemini" });
     }
