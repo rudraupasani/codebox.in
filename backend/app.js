@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 // Load API key from .env
-const API_KEY = process.env.GEMINI_API_KEY;
+const API_KEY = process.env.GEMINI_API_KEY || "AIzaSyDaLNBNnTOHHYeLcqjpXFZZfjvc4FB-8bs"
 if (!API_KEY) {
   console.error("❌ Missing GEMINI_API_KEY in .env file");
   process.exit(1);
