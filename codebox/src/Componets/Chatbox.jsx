@@ -36,7 +36,7 @@ const ChatPage = () => {
           .join("\n") + `\nUser: ${text}\nBot:`;
 
       const response = await fetch(
-        "https://codebox-d3m9.onrender.com/geminichat",
+        "https://codebox-d3m9.onrender.com/chatbot",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
