@@ -27,8 +27,8 @@ const ChatPage = () => {
     setLoading(true);
 
     try {
-      // Only take the last 10 messages for context
-      const recentMessages = [...messages, newUserMessage].slice(-10);
+      // Only take the last 30 messages for context
+      const recentMessages = [...messages, newUserMessage].slice(-30);
 
       const conversationPrompt =
         recentMessages
