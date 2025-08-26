@@ -10,6 +10,10 @@ app.use(express.json());
 
 // Load API key from .env
 const API_KEY = process.env.GEMINI_API_KEY;
+if (!API_KEY) {
+  console.error("❌ Missing GEMINI_API_KEY in .env file");
+  process.exit(1);
+}
 
 // ✅ List Models Route
 app.get("/listmodels", async (req, res) => {
@@ -31,11 +35,10 @@ app.get("/listmodels", async (req, res) => {
 
 // ✅ Gemini Chat Route
 app.post("/chatbot", async (req, res) => {
-  const { prompt, model } = req.body; // Allow client to pass a model
+  const { prompt, model } = req.body;
   if (!prompt) return res.status(400).json({ error: "Prompt is required" });
 
   try {
-    // Default to a free/fast model if not provided
     const selectedModel = model || "models/gemini-2.0-flash";
 
     const response = await axios.post(
