@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bot, Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   const navLinks = [
     { name: "Home", path: "/" },
@@ -49,6 +51,7 @@ const Navbar = () => {
             </motion.div>
             <div className="flex flex-col">
               <motion.span
+                onClick={() => navigate("/") &&  window.scrollTo(0, 0) }
                 className="text-2xl md:text-3xl font-black tracking-tight bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
               >
                 CODEBOX.AI
@@ -81,6 +84,7 @@ const Navbar = () => {
           {/* CTA Button */}
           <div className="hidden lg:flex items-center gap-4">
             <motion.button
+              onClick={() => navigate("/chatbox")}
               whileHover={{
                 scale: 1.05,
                 boxShadow: "0 10px 25px rgba(59, 130, 246, 0.3)",

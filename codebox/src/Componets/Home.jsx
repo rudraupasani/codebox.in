@@ -1,8 +1,10 @@
 // Modern Navbar Component for CODEBOX.AI
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black">
@@ -166,6 +168,9 @@ const Home = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  navigate("/chatbox");
+                }}
                 className="px-8 py-3 bg-purple-600/50 cursor-pointer border-2 border-purple-600/50 text-purple-300 hover:text-white hover:border-purple-400 font-bold rounded-2xl text-lg transition-all duration-300"
               >
                 Try Demo

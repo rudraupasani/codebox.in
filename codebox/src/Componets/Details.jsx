@@ -51,6 +51,17 @@ const Details = () => {
             </p>
           </motion.div>
 
+          <div className="relative w-full h-full rounded-2xl">
+            <motion.img
+              src="image1.png"  
+              alt=""
+              className=" w-full h-full rounded-2xl object-contain"
+              initial={{ scale: 1.1 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.8 }}
+            />
+          </div>
+
           {/* Process Steps */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
@@ -239,7 +250,7 @@ const Details = () => {
 
         </div>
       </motion.div>
-    </div>
+      </div>
   );
 };
 

@@ -4,6 +4,7 @@ import { Route, Routes } from 'react-router-dom';
 import Chatbox from './Componets/Chatbox';
 import About from './Componets/About';
 import HomePage from './pages/HomePage';
+import Features from './pages/Features';
 
 const App = () => {
   return (
@@ -12,6 +13,7 @@ const App = () => {
         <Route path="/chatbox" element={<Chatbox />} />
         <Route path="/about" element={<About />} />
         <Route path="*" element={<HomePage />} />
+        <Route path="/features" element={<Features />} />
       </Routes>
   );
 };
