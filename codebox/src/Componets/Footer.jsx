@@ -25,12 +25,9 @@ const Footer = () => {
             <li><Link
             onClick={() => window.scrollTo(0, 0)}
             to="/chatbox" className="hover:text-white transition">Chat</Link></li>
-            <li><Link
+            <li><a
             onClick={() => window.scrollTo(0, 0)}
-            to="/features" className="hover:text-white transition">Features</Link></li>
-            <li><Link
-            onClick={() => window.scrollTo(0, 0)}
-            to="/contact" className="hover:text-white transition">API</Link></li>
+            href="#features" className="hover:text-white transition">Features</a></li>
             <li><Link
             onClick={() => window.scrollTo(0, 0)}
             to="/about" className="hover:text-white transition">About</Link></li>

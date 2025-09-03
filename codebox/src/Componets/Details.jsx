@@ -1,45 +1,62 @@
-// Modern Navbar Component for CODEBOX.AI
 import React from "react";
 import { motion } from "framer-motion";
 
-const Details = () => {
+// Main component for the website section
+const App = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black">
+    // Main container with a dark background and overflow hidden to contain the scrolling text
+    <div className="relative min-h-screen bg-black overflow-hidden flex items-center justify-center py-20">
+
+      {/* First Scrolling Background Text Slider */}
+      <div className="absolute top-1/3 left-0 w-full flex items-center justify-center overflow-hidden -rotate-3 z-0">
+        <motion.div
+          // Animate the text from left to right, creating a seamless loop
+          animate={{ x: ["0%", "-100%"] }}
+          transition={{
+            duration: 30, // Longer duration for a slower scroll
+            repeat: Infinity,
+            ease: "linear"
+          }}
+          className="text-[8rem] md:text-[10rem] font-black text-white/25 whitespace-nowrap"
+        >
+          {"CODEBOX.AI Students Favorite Ai - ".repeat(10)}
+        </motion.div>
+      </div>
+
+      {/* Second Scrolling Background Text Slider */}
+      <div className="absolute top-2/3 left-0 w-full flex items-center justify-center overflow-hidden rotate-3 z-0">
+        <motion.div
+          // Animate the text from right to left, creating a seamless loop
+          animate={{ x: ["0%", "-100%"] }}
+          transition={{
+            duration: 30, // Longer duration for a slower scroll
+            repeat: Infinity,
+            ease: "linear"
+          }}
+          className="text-[8rem] md:text-[10rem] font-black text-white/25 whitespace-nowrap"
+        >
+          {"CODEBOX.AI Students Favorite Ai - ".repeat(10)}
+        </motion.div>
+      </div>
+
+      {/* Main Content Area */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 1.8 }}
-        className="relative py-20 px-6 overflow-hidden"
+        transition={{ duration: 1, delay: 1.2 }}
+        className="relative z-10 py-20 px-6 max-w-7xl mx-auto"
       >
-        {/* Background Elements */}
-        <div className="absolute inset-0">
-          <motion.div
-            animate={{
-              backgroundPosition: ["0% 0%", "100% 100%"],
-            }}
-            transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-0 opacity-5"
-            style={{
-              backgroundImage: `
-                radial-gradient(circle at 20% 20%, rgba(59,130,246,0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(147,51,234,0.3) 0%, transparent 50%),
-                radial-gradient(circle at 40% 60%, rgba(236,72,153,0.2) 0%, transparent 50%)
-              `,
-            }}
-          />
-        </div>
-
-        <div className="relative z-10 max-w-7xl mx-auto space-y-16">
+        <div className="space-y-16">
           {/* Section Header */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 2 }}
+            transition={{ duration: 0.8, delay: 1.4 }}
             className="text-center space-y-4"
           >
-            <motion.span className="inline-block px-4 py-2 bg-blue-600/10 backdrop-blur-sm border border-blue-500/30 rounded-full text-blue-300 text-sm font-medium">
+            <span className="inline-block px-4 py-2 bg-blue-600/20 rounded-full text-blue-300 text-sm font-medium">
               How It Works
-            </motion.span>
+            </span>
             <h2 className="text-4xl md:text-6xl font-black text-white">
               One Prompt, Multiple Perspectives
             </h2>
@@ -52,9 +69,10 @@ const Details = () => {
           {/* Clean Image Showcase */}
           <div className="relative w-full flex justify-center">
             <motion.img
+              // Using a placeholder image with a transparent background
               src="image1.png"
               alt="How it works illustration"
-              className="max-w-4xl w-full rounded-2xl shadow-xl object-contain"
+              className="max-w-4xl w-full rounded-2xl shadow-xl object-contain bg-transparent"
               initial={{ scale: 1.05, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.8 }}
@@ -66,4 +84,4 @@ const Details = () => {
   );
 };
 
-export default Details;
+export default App;

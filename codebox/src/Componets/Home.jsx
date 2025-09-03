@@ -9,7 +9,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black">
       {/* Main Content with proper top padding for fixed navbar */}
-      <div className="pt-24 px-4 pb-4 min-h-screen flex flex-col">
+      <div className="pt-24 px-4 pb-4 min-h-screen flex flex-col items-center justify-center">
         {/* Modern Hero Header Section */}
         <motion.div 
           initial={{ opacity: 0 }}
@@ -122,8 +122,9 @@ const Home = () => {
             </motion.div>
           </div>
         </motion.div>
+
+       </div>
       </div>
-    </div>
   );
 };
 
