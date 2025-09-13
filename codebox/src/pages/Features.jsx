@@ -1,57 +1,54 @@
-"use client";
 import React from "react";
 import { motion } from "framer-motion";
-import { Sparkles, Zap, Shield, Code2, Cpu, Workflow } from "lucide-react";
-import Footer from "../Componets/Footer";
-import Navbar from "../Componets/Navbar";
+import { Bot, Code, Layers, BrainCircuit, Globe, TerminalSquare } from "lucide-react";
 
-const features = [
+const newFeatures = [
   {
-    icon: <Zap className="w-8 h-8 text-blue-400" />,
-    title: "Lightning Fast",
-    desc: "Experience real-time responses powered by Gemini AI with no delays.",
+    icon: <Bot className="w-8 h-8 text-indigo-400" />,
+    title: "AI Pair Programmer",
+    desc: "Collaborate with an AI that helps you write, refactor, and optimize your code in real-time.",
   },
   {
-    icon: <Shield className="w-8 h-8 text-green-400" />,
-    title: "Secure & Reliable",
-    desc: "Your data is protected with enterprise-grade security standards.",
+    icon: <TerminalSquare className="w-8 h-8 text-emerald-400" />,
+    title: "Multi-Language Support",
+    desc: "Seamlessly switch between JavaScript, Python, Java, C++, and more without setup hassles.",
   },
   {
-    icon: <Code2 className="w-8 h-8 text-purple-400" />,
-    title: "Code Understanding",
-    desc: "Parse, explain, and debug code instantly across multiple languages.",
+    icon: <Layers className="w-8 h-8 text-amber-400" />,
+    title: "Project Scaffolding",
+    desc: "Generate complete boilerplates and architectures instantly for React, Node, and Next.js apps.",
   },
   {
-    icon: <Cpu className="w-8 h-8 text-pink-400" />,
-    title: "Smart AI Engine",
-    desc: "Built on advanced AI models for accurate and meaningful answers.",
+    icon: <BrainCircuit className="w-8 h-8 text-pink-400" />,
+    title: "Context-Aware Debugging",
+    desc: "Automatically identify bugs and suggest fixes with smart context-based recommendations.",
   },
   {
-    icon: <Workflow className="w-8 h-8 text-yellow-400" />,
-    title: "Workflow Automation",
-    desc: "Boost productivity with automated coding, docs, and testing.",
+    icon: <Globe className="w-8 h-8 text-sky-400" />,
+    title: "Cloud Sync",
+    desc: "Access your code, prompts, and history from anywhere with secure cloud synchronization.",
   },
   {
-    icon: <Sparkles className="w-8 h-8 text-cyan-400" />,
-    title: "Modern UI/UX",
-    desc: "Enjoy a sleek, glassmorphic interface with smooth animations.",
+    icon: <Code className="w-8 h-8 text-violet-400" />,
+    title: "One-Click Deploy",
+    desc: "Push projects directly to platforms like Vercel, Netlify, or your custom server.",
   },
 ];
 
-const Features = () => {
+const NewFeatures = () => {
   return (
-    <>
     <div
-    id="features"
-    className="min-h-screen  bg-gradient-to-b from-gray-900 via-gray-800 to-black text-white flex flex-col items-center py-20 px-6">
+      id="new-features"
+      className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-gray-800 text-white flex flex-col items-center py-20 px-6"
+    >
       {/* Title */}
       <motion.h1
         initial={{ opacity: 0, y: -40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="text-4xl md:text-5xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300"
+        className="text-4xl md:text-5xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-300"
       >
-         Features
+        Next-Gen Features
       </motion.h1>
 
       <motion.p
@@ -60,14 +57,14 @@ const Features = () => {
         transition={{ delay: 0.3, duration: 0.8 }}
         className="text-gray-300 text-lg max-w-2xl text-center mb-16"
       >
-        Discover the powerful tools that make{" "}
-        <span className="text-blue-400 font-semibold">Codebox AI</span> your
-        perfect coding companion.
+        Unlock the future of coding with{" "}
+        <span className="text-purple-400 font-semibold">Codebox AI</span> — built
+        for developers, by developers.
       </motion.p>
 
       {/* Features Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl">
-        {features.map((f, i) => (
+        {newFeatures.map((f, i) => (
           <motion.div
             key={i}
             initial={{ opacity: 0, y: 50 }}
@@ -83,8 +80,7 @@ const Features = () => {
         ))}
       </div>
     </div>
-    </>
   );
 };
 
-export default Features;
+export default NewFeatures;

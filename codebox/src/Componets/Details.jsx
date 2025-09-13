@@ -80,6 +80,7 @@ const App = () => {
           </div>
         </div>
       </motion.div>
+      
     </div>
   );
 };

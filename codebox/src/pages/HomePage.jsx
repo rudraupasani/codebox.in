@@ -11,7 +11,6 @@ const HomePage = () => {
     <div>
         <Navbar />
         <Home/>
-        <Details/>
         <Features />
         <Footer/>
     </div>

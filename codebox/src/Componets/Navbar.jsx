@@ -21,10 +21,11 @@ const Navbar = () => {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="fixed top-6 left-1/2 -translate-x-1/2 z-50 
-                   bg-white/10 backdrop-blur-xl border border-white/20 
-                   rounded-full shadow-lg px-6 py-3 flex items-center justify-between w-[90%] md:w-auto"
+                   bg-white/10 backdrop-blur-xl border border-white/80 
+                   rounded-full shadow-lg px-6 py-3 flex items-center justify-between w-[80%] md:w-auto"
       >
         {/* Logo */}
+
         <motion.div
           whileHover={{ scale: 1.05 }}
           className="flex items-center cursor-pointer mr-2"
@@ -39,7 +40,7 @@ const Navbar = () => {
               ],
             }}
             transition={{ duration: 2, repeat: Infinity }}
-            className="w-8 h-8 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 
+            className="w-12 h-8 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 
                        rounded-full flex items-center justify-center relative overflow-hidden"
           >
             <motion.div
@@ -66,8 +67,7 @@ const Navbar = () => {
                     navigate("/chatbox");
                   }}
                   className="px-3 py-1.5 rounded-full 
-                             text-gray-300 hover:bg-gradient-to-r hover:from-blue-500 hover:to-purple-500 
-                             hover:text-white transition-all"
+                             text-gray-300 "
                 >
                   {link.name}
                 </button>
@@ -76,8 +76,7 @@ const Navbar = () => {
                   href={link.path}
                   onClick={() => window.scrollTo(0, 0)}
                   className="px-3 py-1.5 rounded-full
-                             text-gray-300 hover:bg-gradient-to-r hover:from-blue-500 hover:to-purple-500 
-                             hover:text-white transition-all"
+                             text-gray-300"
                 >
                   {link.name}
                 </a>

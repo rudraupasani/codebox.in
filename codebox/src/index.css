@@ -1,19 +1,19 @@
 @import "tailwindcss";
 
-#chatdiv {
+#hidden,#chatdiv {
   scrollbar-width: thin;
   scrollbar-color: #4b5563 transparent;
 }
 
-#chatdiv::-webkit-scrollbar {
+#hidden,#chatdiv::-webkit-scrollbar {
   width: 8px;
 }
 
-#chatdiv::-webkit-scrollbar-thumb {
+#hidden,#chatdiv::-webkit-scrollbar-thumb {
   background-color: #4b5563;
   border-radius: 9999px;
 }
-
+#hidden,
 #chatdiv::-webkit-scrollbar-track {
   background: transparent;
 }

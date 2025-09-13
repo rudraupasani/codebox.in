@@ -11,7 +11,7 @@ const Home = () => {
       {/* Main Content with proper top padding for fixed navbar */}
       <div className="pt-24 px-4 pb-4 min-h-screen flex flex-col items-center justify-center">
         {/* Modern Hero Header Section */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 0.3 }}
@@ -20,7 +20,7 @@ const Home = () => {
           {/* Animated Grid Background */}
           <div className="absolute inset-0 overflow-hidden">
             <motion.div
-              animate={{ 
+              animate={{
                 backgroundPosition: ["0% 0%", "100% 100%"],
               }}
               transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
@@ -33,14 +33,14 @@ const Home = () => {
                 backgroundSize: '50px 50px'
               }}
             />
-            
+
             {/* Floating Particles */}
             {[...Array(8)].map((_, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, scale: 0 }}
-                animate={{ 
-                  opacity: [0.2, 0.6, 0.2], 
+                animate={{
+                  opacity: [0.2, 0.6, 0.2],
                   scale: [0.5, 1, 0.5],
                   x: [0, Math.sin(i) * 100, 0],
                   y: [0, Math.cos(i) * 80, 0]
@@ -51,11 +51,10 @@ const Home = () => {
                   delay: i * 0.7,
                   ease: "easeInOut"
                 }}
-                className={`absolute w-24 h-24 rounded-full ${
-                  i % 4 === 0 ? 'bg-blue-500/20' :
+                className={`absolute w-24 h-24 rounded-full ${i % 4 === 0 ? 'bg-blue-500/20' :
                   i % 4 === 1 ? 'bg-purple-500/20' :
-                  i % 4 === 2 ? 'bg-pink-500/20' : 'bg-cyan-500/20'
-                } blur-lg`}
+                    i % 4 === 2 ? 'bg-pink-500/20' : 'bg-cyan-500/20'
+                  } blur-lg`}
                 style={{
                   left: `${10 + (i * 10)}%`,
                   top: `${15 + (i * 7)}%`,
@@ -65,7 +64,7 @@ const Home = () => {
           </div>
 
           {/* Main Content */}
-          <div className="relative z-10 space-y-8 max-w-6xl mx-auto">           
+          <div className="relative z-10 space-y-8 max-w-6xl mx-auto">
             {/* Main Title */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -98,7 +97,7 @@ const Home = () => {
               className="space-y-6"
             >
               <p className="text-md md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-                Transform your development workflow with intelligent code assistance, 
+                Transform your development workflow with intelligent code assistance,
                 real-time collaboration, and <span className="text-blue-400 font-semibold">next-generation AI tools</span>.
               </p>
             </motion.div>
@@ -123,8 +122,20 @@ const Home = () => {
           </div>
         </motion.div>
 
-       </div>
+        <motion.div
+          className="w-full flex items-center justify-center text-center p-2 md:p-2 md:max-w-xl lg:p-2 lg:max-w-4xl border-2 border-gray-700 rounded-xl shadow-xl bg-gray-900 relative overflow-hidden"
+          animate={{ y: [0, -20, 0] }} // smooth floating animation
+          transition={{ duration: 4, repeat: Infinity, repeatType: "loop", ease: "easeInOut" }}
+        >
+          <img
+            className="w-full  h-auto object-contain"
+            src="screen.png"
+            alt="Floating illustration"
+          />
+        </motion.div>
       </div>
+
+    </div>
   );
 };
 

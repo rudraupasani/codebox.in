@@ -10,6 +10,7 @@ app.use(express.json());
 
 // Load API key from .env
 const API_KEY = "AIzaSyDaLNBNnTOHHYeLcqjpXFZZfjvc4FB-8bs";
+
 // ✅ List Models Route
 app.get("/listmodels", async (req, res) => {
   try {
@@ -30,15 +31,28 @@ app.get("/listmodels", async (req, res) => {
 
 // ✅ Gemini Chat Route
 app.post("/chatbot", async (req, res) => {
-  const { prompt, model } = req.body;
-  if (!prompt) return res.status(400).json({ error: "Prompt is required" });
+  const { prompt: userPrompt, model } = req.body;
+  if (!userPrompt) return res.status(400).json({ error: "Prompt is required" });
 
   try {
     const selectedModel = model || "models/gemini-2.0-flash";
 
+    // ✅ Inject instruction from backend
+    const finalPrompt = `You are Codebox AI, a highly skilled and friendly coding assistant.
+- Explain programming concepts clearly with examples.
+- Provide working code snippets in multiple languages (JS, Python, C, C++, Java, etc.).
+- Share relevant youtube video links, tutorials, and documentation websites when helpful.
+- Format all code cleanly using markdown blocks.
+- Debug errors step by step and suggest fixes.
+- Suggest practical project ideas with code examples when asked.
+- Always be concise, structured, and helpful.
+- If the user’s request is unclear, ask clarifying questions before answering.
+
+User request: ${userPrompt}`;
+
     const response = await axios.post(
       `https://generativelanguage.googleapis.com/v1beta/${selectedModel}:generateContent?key=${API_KEY}`,
-      { contents: [{ parts: [{ text: prompt }] }] }
+      { contents: [{ parts: [{ text: finalPrompt }] }] }
     );
 
     const text = response.data.candidates?.[0]?.content?.parts?.[0]?.text;
