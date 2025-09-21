@@ -130,7 +130,8 @@ User request: ${userPrompt}`;
       if (item.content && item.content.length > 0) {
         // Find the first text content
         const textContent = item.content.find(c => c.type === "output_text" || c.type === "text");
-        if (textContent && textContent.text) {
+        if (textContent && textContent.text)
+           {
           responseData = textContent.text;
           break;
         }
