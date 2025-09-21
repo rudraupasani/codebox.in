@@ -79,6 +79,72 @@ User request: ${userPrompt}`;
   }
 });
 
+const APII_KEY = "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"; // ⚠️ keep secret in .env
+
+
+app.post("/response", async (req, res) => {
+  const { prompt: userPrompt } = req.body;
+  if (!userPrompt) return res.status(400).json({ error: "Prompt is required" });
+
+  const finalPrompt = `You are Codebox AI, a highly skilled and friendly coding assistant.
+
+Explain programming concepts clearly with examples.
+Provide working code snippets in multiple languages (JS, Python, C, C++, Java, etc.).
+Share relevant YouTube video links, tutorials, and documentation websites when helpful.
+Format all code cleanly using markdown blocks.
+Debug errors step by step and suggest fixes.
+Suggest practical project ideas with code examples when asked.
+Always be concise, structured, and helpful.
+If the user’s request is unclear, ask clarifying questions before answering.
+Provide code reviews and feedback on best practices.
+Generate code based on user input.
+Translate code from one programming language to another.
+Explain how code works, including step-by-step breakdowns and examples.
+Suggest project templates and examples to help users get started.
+
+User request: ${userPrompt}`;
+
+  try {
+    const response = await axios.post(
+      "https://api.groq.com/openai/v1/responses",
+      {
+        model: "openai/gpt-oss-120b",
+        input: [
+          { role: "user", content: finalPrompt },
+        ],
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${APII_KEY}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const outputArray = response.data.output || [];
+    let responseData = "No response from Groq API";
+
+    for (const item of outputArray) {
+      if (item.content && item.content.length > 0) {
+        // Find the first text content
+        const textContent = item.content.find(c => c.type === "output_text" || c.type === "text");
+        if (textContent && textContent.text) {
+          responseData = textContent.text;
+          break;
+        }
+      }
+    }
+
+    res.json({ response: responseData });
+  } catch (err) {
+    console.error("Groq API Error:", err.response?.data || err.message);
+    res.status(500).json({
+      error: err?.response?.data?.error?.message || err.message || "Groq API call failed",
+    });
+  }
+});
+
+
 // ✅ Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));

@@ -1,98 +1,101 @@
-import React, { useState, useRef, useEffect, Suspense } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Send,
   Bot,
   User,
   BrainCircuit,
-  Sun,
   Play,
   Square,
   Menu,
   X,
+  Copy,
+  Check,
 } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
-import Notes from "./Notes";
-
-// ✅ Lazy load Codeeditor
-const Codeeditor = React.lazy(() => import("../pages/Codeeditor"));
 
 const ChatPage = () => {
   const [messages, setMessages] = useState([
-    { sender: "bot", text: "👋 Hi, I’m Codebox AI. How can I help you today?" },
+    { 
+      sender: "bot", 
+      text: "Hi there! I'm Codebox AI, your coding assistant. I can help you with programming questions, code reviews, debugging, and more. What would you like to work on today?" 
+    },
   ]);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
   const [speakingIndex, setSpeakingIndex] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [copiedCode, setCopiedCode] = useState({});
   const messagesEndRef = useRef(null);
-  const location = useLocation();
-
-  const [showEditor, setShowEditor] = useState(false);
-  const [showNotes, setShowNotes] = useState(false);
+  const textareaRef = useRef(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-const handleSend = async () => {
-  if (!text.trim()) return;
-
-  const newUserMessage = { sender: "user", text };
-  setMessages((prev) => [...prev, newUserMessage]);
-  setText("");
-  setLoading(true);
-
-  try {
-    // keep last 20-30 messages for context
-    const recentMessages = [...messages, newUserMessage].slice(-1000);
-
-    // ✅ Only send raw conversation
-    const conversationPrompt = recentMessages
-      .map((msg) => `${msg.sender === "user" ? "User" : "Bot"}: ${msg.text}`)
-      .join("\n");
-
-    const response = await fetch("http://localhost:3000/chatbot", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        prompt: conversationPrompt, // 👈 no instruction here
-      }),
-    });
-
-    const data = await response.json();
-    
-
-    if (!response.ok) {
-      if (response.status === 429) {
-        setMessages((prev) => [
-          ...prev,
-          {
-            sender: "bot",
-            text: "⚠️ You’ve hit the request limit. Please wait a moment before trying again.",
-          },
-        ]);
-      } else {
-        throw new Error(data.error || "Server error");
-      }
-      return;
+  // Auto-resize textarea
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 120) + 'px';
     }
+  }, [text]);
 
-    const botText = data.response || "🤖 Sorry, I didn't understand that.";
-    setMessages((prev) => [...prev, { sender: "bot", text: botText }]);
-  } catch (err) {
-    setMessages((prev) => [
-      ...prev,
-      { sender: "bot", text: `⚠️ ${err.message}` },
-    ]);
-  } finally {
-    setLoading(false);
-  }
-};
+  const handleSend = async () => {
+    if (!text.trim()) return;
+
+    const newUserMessage = { sender: "user", text };
+    setMessages((prev) => [...prev, newUserMessage]);
+    setText("");
+    setLoading(true);
+
+    try {
+      const recentMessages = [...messages, newUserMessage].slice(-1000);
+
+      const conversationPrompt = recentMessages
+        .map((msg) => `${msg.sender === "user" ? "User" : "Bot"}: ${msg.text}`)
+        .join("\n");
+
+      const response = await fetch("http://localhost:3000/response", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt: conversationPrompt,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 429) {
+          setMessages((prev) => [
+            ...prev,
+            {
+              sender: "bot",
+              text: "I'm experiencing high demand right now. Please wait a moment before trying again.",
+            },
+          ]);
+        } else {
+          throw new Error(data.error || "Server error");
+        }
+        return;
+      }
+
+      const botText = data.response || "I apologize, but I didn't understand that. Could you please rephrase your question?";
+      setMessages((prev) => [...prev, { sender: "bot", text: botText }]);
+    } catch (err) {
+      setMessages((prev) => [
+        ...prev,
+        { sender: "bot", text: `I encountered an error: ${err.message}` },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleRead = (text, idx) => {
     window.speechSynthesis.cancel();
@@ -107,264 +110,416 @@ const handleSend = async () => {
     setSpeakingIndex(null);
   };
 
+  const handleCopyCode = async (code, index) => {
+    await navigator.clipboard.writeText(code);
+    setCopiedCode(prev => ({ ...prev, [index]: true }));
+    setTimeout(() => {
+      setCopiedCode(prev => ({ ...prev, [index]: false }));
+    }, 2000);
+  };
+
   const navLinks = [
     { label: "Home", to: "/" },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex flex-col items-center p-2 sm:p-4">
-      {/* Header / Navbar */}
-      <header className="bg-gray-800/70 backdrop-blur-xl rounded-2xl shadow-lg px-4 sm:px-6 py-3 sm:py-4 w-full max-w-9xl flex items-center justify-between border border-white/10 relative z-[100]">
-        <h1 className="flex items-center gap-2 text-lg sm:text-2xl font-bold text-white">
-          <BrainCircuit className="w-6 h-6 text-blue-400" />
-          Codebox AI
-        </h1>
+    <div className="h-screen bg-gray-900 flex flex-col transition-colors duration-300 overflow-hidden">
+      {/* Header */}
+      <header className="bg-gray-800 border-b border-gray-700 px-4 py-3 flex items-center justify-between z-50 transition-colors duration-300 flex-shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-lg flex items-center justify-center">
+            <BrainCircuit className="w-5 h-5 text-white" />
+          </div>
+          <h1 className="text-xl font-semibold text-gray-100">Codebox AI</h1>
+        </div>
 
-        <nav className="hidden md:flex items-center gap-6 text-gray-300">
-          {navLinks.map((link, i) =>
-            link.to.startsWith("/") ? (
-              <Link key={i} to={link.to} className="hover:text-blue-400 transition">
+        <div className="flex items-center gap-4">
+          <nav className="hidden md:flex items-center gap-6">
+            {navLinks.map((link, i) => (
+              <Link key={i} to={link.to} className="text-gray-300 hover:text-gray-100 transition-colors">
                 {link.label}
               </Link>
-            ) : (
-              <a key={i} href={link.to} className="hover:text-blue-400 transition">
-                {link.label}
-              </a>
-            )
-          )}
-          <button
-            onClick={() => setShowEditor(true)}
-            className="p-2 rounded-full hover:bg-gray-700">
-            Code Editor
-          </button>
+            ))}
+          </nav>
 
           <button
-            onClick={() => setShowNotes(true)}
-            className="p-2 rounded-full hover:bg-gray-700">
-            Notes
+            className="md:hidden p-2 rounded-lg hover:bg-gray-700 transition-colors"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            {menuOpen ? <X size={20} className="text-gray-100" /> : <Menu size={20} className="text-gray-100" />}
           </button>
-        </nav>
-
-        <button
-          className="md:hidden p-2 rounded-md hover:bg-gray-700 transition"
-          onClick={() => setMenuOpen(!menuOpen)}
-        >
-          {menuOpen ? <X size={24} className="text-gray-300" /> : <Menu size={24} className="text-gray-300" />}
-        </button>
+        </div>
 
         {menuOpen && (
-          <div className="absolute top-full left-0 w-full mt-2 bg-gray-900/95 rounded-xl shadow-lg border border-white/10 flex flex-col items-start p-4 gap-3 text-gray-300 md:hidden z-[100]">
-            {navLinks.map((link, i) =>
-              link.to.startsWith("/") ? (
-                <Link key={i} to={link.to} className="hover:text-blue-400 transition" onClick={() => setMenuOpen(false)}>
-                  {link.label}
-                </Link>
-              ) : (
-                <a key={i} href={link.to} className="hover:text-blue-400 transition" onClick={() => setMenuOpen(false)}>
-                  {link.label}
-                </a>
-              )
-            )}
-           <button
-            onClick={() => setShowEditor(true)}
-            className="p-2 rounded-full hover:bg-gray-700">
-            Code Editor
-          </button>
-           <button
-            onClick={() => setShowNotes(true)}
-            className="p-2 rounded-full hover:bg-gray-700">
-            Notes
-          </button>
-
-          </div>
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="absolute top-15 left-0 right-0 bg-gray-800 border-b border-gray-700 p-4 md:hidden z-40"
+          >
+            {navLinks.map((link, i) => (
+              <Link 
+                key={i} 
+                to={link.to} 
+                className="block py-2 text-gray-300 hover:text-gray-100 transition-colors"
+                onClick={() => setMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </motion.div>
         )}
       </header>
 
-      {showEditor ? (
-        <motion.div
-          drag
-          dragMomentum={false}
-          className="fixed inset-0 z-[90] flex justify-center items-center sm:pt-10 px-2">
-          <div
-           className="rounded-2xl shadow-xl w-full max-w-3xl h-[60vh] overflow-auto relative">
-            <button
-              onClick={() => setShowEditor(false)}
-              className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-700 z-10"
-            >
-              <X size={24} className="text-gray-300" />
-            </button>
-            <Suspense fallback={<div className="text-white p-4">Loading Editor...</div>}>
-              <Codeeditor />
-            </Suspense>
-          </div>
-        </motion.div>
-      ) : null}
-
-      {showNotes ? (
-        <motion.div
-          drag
-          dragMomentum={false}
-          className="fixed inset-0 z-[90] flex justify-center items-center  sm:pt-10 px-2">
-          <div className="rounded-2xl shadow-xl w-full max-w-3xl h-[60vh] overflow-hidden relative">
-            <button
-              onClick={() => setShowNotes(false)}
-              className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-700 z-10"
-            >
-              <X size={24} className="text-gray-300" />
-            </button>
-            <Suspense fallback={<div className="text-white p-4">Loading Editor...</div>}>
-            <Notes />
-            </Suspense>
-          </div>
-        </motion.div>
-      ) : null}
-
-      {/* Chatbox */}
-      <div className="w-full max-w-5xl flex flex-col h-[84vh] overflow-hidden mt-4 rounded-2xl">
-        <div id="chatdiv" className="flex-1 p-3 sm:p-6 overflow-y-auto space-y-4">
-          {messages.map((msg, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className={`flex flex-col gap-1 ${msg.sender === "user" ? "items-end" : "items-start"}`}
-            >
-              <div className="flex items-start gap-2 sm:gap-3">
-                {msg.sender === "bot" && (
-                  <div className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-green-500 text-white shadow-md">
-                    <Bot size={16} />
-                  </div>
-                )}
-
-                <div
-                  className={`px-3 py-2 sm:px-4 sm:py-3 rounded-2xl max-w-80 md:max-w-xl text-sm leading-relaxed shadow-md overflow-x-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent ${
-                    msg.sender === "user"
-                      ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-br-none"
-                      : "bg-gray-700/50 text-gray-300 rounded-bl-none border border-white/10"
-                  }`}
+      {/* Main Chat Area - Flex container */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Messages Container - Scrollable */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="max-w-4xl mx-auto px-4 py-6">
+            <div className="space-y-8">
+              {messages.map((msg, idx) => (
+                <motion.div 
+                  key={idx} 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className={`w-full ${msg.sender === "user" ? "flex justify-end" : ""}`}
                 >
-                  <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    components={{
-                      code({ inline, className, children, ...props }) {
-                        const match = /language-(\w+)/.exec(className || "");
-                        const codeContent = String(children).replace(/\n$/, "");
-
-                        const handleCopy = () => {
-                          navigator.clipboard.writeText(codeContent);
-                        };
-
-                        return !inline && match ? (
-                          <div className="relative overflow-x-auto max-w-full group">
-                            <SyntaxHighlighter
-                              style={oneDark}
-                              language={match[1]}
-                              PreTag="div"
-                              className="rounded-lg p-3 text-xs sm:text-sm shadow-inner min-w-[200px]"
-                              {...props}
-                            >
-                              {codeContent}
-                            </SyntaxHighlighter>
-                            <button
-                              onClick={handleCopy}
-                              className="absolute top-2 right-2 bg-black text-white px-2 py-1 text-xs rounded hover:bg-gray-700 transition opacity-100 group-hover:opacity-100"
-                            >
-                              Copy
-                            </button>
-                          </div>
-                        ) : (
-                          <code className="bg-gray-800/60 px-1.5 py-0.5 rounded text-green-600 text-xs" {...props}>
-                            {children}
-                          </code>
-                        );
-                      },
-                      p: ({ children }) => <p className="mb-2 leading-relaxed text-white break-words font-semibold">{children}</p>,
-                      strong: ({ children }) => <strong className="text-purple-400 text-md font-semibold">{children}</strong>,
-                      a: ({ children, ...props }) => (
-                        <a className="text-blue-400 underline hover:text-blue-300 break-all" target="_blank" rel="noopener noreferrer" {...props}>
-                          {children}
-                        </a>
-                      ),
-                      li: ({ children }) => <li className="list-disc ml-6 text-gray-300 font-extralight">{children}</li>,
-                      h1: ({ children }) => <h1 className="text-2xl font-bold text-red-500 ">{children}</h1>,
-                      h2: ({ children }) => <h2 className="text-2xl font-bold text-orange-400">{children}</h2>,
-                      h3: ({ children }) => <h3 className="text-lg font-bold text-zinc-400">{children}</h3>,
-                      iframe: ({ ...props  }) => (
-                        <div className="my-4">
-                          <iframe src={props.src.video} className="w-full aspect-video rounded-lg shadow-lg"  />
+                  {msg.sender === "user" ? (
+                    /* User Message - Right Side */
+                    <div className="flex gap-3 items-start max-w-[80%] flex-row-reverse">
+                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                        <User size={16} className="text-white" />
+                      </div>
+                      <div className="flex flex-col items-end">
+                        <div className="mb-1">
+                          <span className="text-sm font-medium text-gray-100">You</span>
                         </div>
-                      ),  
-                    }}
-                  >
-                    {msg.text}
-                  </ReactMarkdown>
-                </div>
+                        <div className="bg-blue-600 text-white px-4 py-3 rounded-2xl rounded-tr-sm max-w-full">
+                          <div className="prose prose-invert max-w-none">
+                            <ReactMarkdown
+                              remarkPlugins={[remarkGfm]}
+                              components={{
+                                code({ inline, className, children, ...props }) {
+                                  const match = /language-(\w+)/.exec(className || "");
+                                  const codeContent = String(children).replace(/\n$/, "");
 
-                {msg.sender === "user" && (
-                  <div className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-blue-500 text-white shadow-md">
-                    <User size={16} />
-                  </div>
-                )}
-              </div>
-
-              {msg.sender === "bot" && (
-                <div className="flex gap-2 mt-1 ml-10">
-                  {speakingIndex === idx ? (
-                    <button
-                      onClick={handleStop}
-                      className="flex items-center gap-1 px-2 py-1 bg-red-500/80 hover:bg-red-500 text-white text-xs rounded-md"
-                    >
-                      <Square size={14} /> Stop
-                    </button>
+                                  return !inline && match ? (
+                                    <div className="relative group my-2">
+                                      <div className="bg-black/20 rounded-lg overflow-hidden border border-white/20">
+                                        <div className="flex items-center justify-between px-3 py-2 bg-black/30 border-b border-white/20">
+                                          <span className="text-xs text-white/70 font-medium uppercase">
+                                            {match[1]}
+                                          </span>
+                                          <button
+                                            onClick={() => handleCopyCode(codeContent, `user-${idx}-${match[1]}`)}
+                                            className="flex items-center gap-1 px-2 py-1 text-xs text-white/70 hover:text-white hover:bg-white/10 rounded transition-colors"
+                                          >
+                                            {copiedCode[`user-${idx}-${match[1]}`] ? (
+                                              <>
+                                                <Check size={12} />
+                                                Copied
+                                              </>
+                                            ) : (
+                                              <>
+                                                <Copy size={12} />
+                                                Copy
+                                              </>
+                                            )}
+                                          </button>
+                                        </div>
+                                        <SyntaxHighlighter
+                                          style={oneDark}
+                                          language={match[1]}
+                                          PreTag="div"
+                                          className="!m-0 text-sm"
+                                          customStyle={{ 
+                                            padding: '0.75rem', 
+                                            background: 'rgba(0,0,0,0.3)',
+                                            margin: 0
+                                          }}
+                                          {...props}
+                                        >
+                                          {codeContent}
+                                        </SyntaxHighlighter>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <code className="bg-white/20 text-white px-1.5 py-0.5 rounded text-sm font-mono" {...props}>
+                                      {children}
+                                    </code>
+                                  );
+                                },
+                                p: ({ children }) => (
+                                  <p className="mb-2 text-white leading-relaxed last:mb-0">{children}</p>
+                                ),
+                                strong: ({ children }) => (
+                                  <strong className="font-semibold text-white">{children}</strong>
+                                ),
+                                em: ({ children }) => (
+                                  <em className="italic text-white">{children}</em>
+                                ),
+                                a: ({ children, ...props }) => (
+                                  <a 
+                                    className="text-blue-200 hover:text-blue-100 underline" 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    {...props}
+                                  >
+                                    {children}
+                                  </a>
+                                ),
+                                ul: ({ children }) => (
+                                  <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>
+                                ),
+                                ol: ({ children }) => (
+                                  <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>
+                                ),
+                                li: ({ children }) => (
+                                  <li className="text-white text-sm">{children}</li>
+                                ),
+                                h1: ({ children }) => (
+                                  <h1 className="text-lg font-bold text-white mb-2 mt-3 first:mt-0">{children}</h1>
+                                ),
+                                h2: ({ children }) => (
+                                  <h2 className="text-base font-bold text-white mb-2 mt-2">{children}</h2>
+                                ),
+                                h3: ({ children }) => (
+                                  <h3 className="text-sm font-semibold text-white mb-1 mt-2">{children}</h3>
+                                ),
+                                blockquote: ({ children }) => (
+                                  <blockquote className="border-l-2 border-white/30 pl-3 py-1 my-2 text-white/90 italic">
+                                    {children}
+                                  </blockquote>
+                                ),
+                                hr: () => (
+                                  <hr className="border-white/30 my-2" />
+                                ),
+                              }}
+                            >
+                              {msg.text}
+                            </ReactMarkdown>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   ) : (
-                    <button
-                      onClick={() => handleRead(msg.text, idx)}
-                      className="flex items-center gap-1 px-2 py-1 bg-blue-500/80 hover:bg-blue-500 text-white text-xs rounded-md"
-                    >
-                      <Play size={14} /> Read AI
-                    </button>
+                    /* Bot Message - Left Side */
+                    <div className="flex gap-4 items-start w-full">
+                      <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center flex-shrink-0">
+                        <Bot size={16} className="text-white" />
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="mb-2">
+                          <span className="text-sm font-medium text-gray-100">Codebox AI</span>
+                        </div>
+                        
+                        <div className="prose prose-gray max-w-none">
+                          <ReactMarkdown
+                            remarkPlugins={[remarkGfm]}
+                            components={{
+                              code({ inline, className, children, ...props }) {
+                                const match = /language-(\w+)/.exec(className || "");
+                                const codeContent = String(children).replace(/\n$/, "");
+
+                                return !inline && match ? (
+                                  <div className="relative group my-4">
+                                    <div className="bg-gray-900 rounded-lg overflow-hidden border border-gray-700">
+                                      <div className="flex items-center justify-between px-4 py-2 bg-gray-800 border-b border-gray-700">
+                                        <span className="text-xs text-gray-400 font-medium uppercase">
+                                          {match[1]}
+                                        </span>
+                                        <button
+                                          onClick={() => handleCopyCode(codeContent, `${idx}-${match[1]}`)}
+                                          className="flex items-center gap-1 px-2 py-1 text-xs text-gray-400 hover:bg-gray-700 rounded transition-colors"
+                                        >
+                                          {copiedCode[`${idx}-${match[1]}`] ? (
+                                            <>
+                                              <Check size={12} />
+                                              Copied
+                                            </>
+                                          ) : (
+                                            <>
+                                              <Copy size={12} />
+                                              Copy
+                                            </>
+                                          )}
+                                        </button>
+                                      </div>
+                                      <SyntaxHighlighter
+                                        style={oneDark}
+                                        language={match[1]}
+                                        PreTag="div"
+                                        className="!m-0 text-sm"
+                                        customStyle={{ 
+                                          padding: '1rem', 
+                                          background: '#1f2937',
+                                          margin: 0
+                                        }}
+                                        {...props}
+                                      >
+                                        {codeContent}
+                                      </SyntaxHighlighter>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <code className="bg-gray-800 text-orange-400 px-1.5 py-0.5 rounded text-sm font-mono" {...props}>
+                                    {children}
+                                  </code>
+                                );
+                              },
+                              p: ({ children }) => (
+                                <p className="mb-3 text-gray-200 leading-relaxed">{children}</p>
+                              ),
+                              strong: ({ children }) => (
+                                <strong className="font-semibold text-gray-100">{children}</strong>
+                              ),
+                              a: ({ children, ...props }) => (
+                                <a 
+                                  className="text-blue-500 hover:text-blue-600 underline" 
+                                  target="_blank" 
+                                  rel="noopener noreferrer" 
+                                  {...props}
+                                >
+                                  {children}
+                                </a>
+                              ),
+                              ul: ({ children }) => (
+                                <ul className="list-disc list-inside mb-3 space-y-1">{children}</ul>
+                              ),
+                              ol: ({ children }) => (
+                                <ol className="list-decimal list-inside mb-3 space-y-1">{children}</ol>
+                              ),
+                              li: ({ children }) => (
+                                <li className="text-gray-200">{children}</li>
+                              ),
+                              h1: ({ children }) => (
+                                <h1 className="text-2xl font-bold text-gray-100 mb-3 mt-6 first:mt-0">{children}</h1>
+                              ),
+                              h2: ({ children }) => (
+                                <h2 className="text-xl font-bold text-gray-100 mb-3 mt-5">{children}</h2>
+                              ),
+                              h3: ({ children }) => (
+                                <h3 className="text-lg font-semibold text-gray-100 mb-2 mt-4">{children}</h3>
+                              ),
+                              h4: ({ children }) => (
+                                <h4 className="text-md font-semibold text-gray-100 mb-2 mt-3">{children}</h4>
+                              ),  
+                              table: ({ children }) => (
+                                <div className="overflow-x-auto my-4">
+                                  <table className="min-w-full border border-gray-700 text-gray-200">
+                                    <thead>
+                                      <tr className="bg-gray-800">
+                                        <th className="p-2 border-b border-gray-600">Header 1</th>
+                                        <th className="p-2 border-b border-gray-600">Header 2</th>
+                                        <th className="p-2 border-b border-gray-600">Header 3</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {children}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              ),
+                              blockquote: ({ children }) => (
+                                <blockquote className="border-l-4 border-gray-600 text-gray-300 pl-4 py-2 my-4 italic">
+                                  {children}
+                                </blockquote>
+                              ),
+                            }}
+                          >
+                            {msg.text}
+                          </ReactMarkdown>
+                        </div>
+
+                        {/* Bot message actions */}
+                        <div className="flex gap-2 mt-3">
+                          {speakingIndex === idx ? (
+                            <button
+                              onClick={handleStop}
+                              className="flex items-center gap-1 px-3 py-1.5 text-xs text-gray-400 hover:text-gray-200 hover:bg-gray-700 rounded-lg transition-colors"
+                            >
+                              <Square size={12} />
+                              Stop
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleRead(msg.text, idx)}
+                              className="flex items-center gap-1 px-3 py-1.5 text-xs text-gray-400 hover:text-gray-200 hover:bg-gray-700 rounded-lg transition-colors"
+                            >
+                              <Play size={12} />
+                              Read aloud
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   )}
-                </div>
+                </motion.div>
+              ))}
+
+              {loading && (
+                <motion.div 
+                  initial={{ opacity: 0 }} 
+                  animate={{ opacity: 1 }}
+                  className="flex gap-4 items-start w-full"
+                >
+                  <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center">
+                    <Bot size={16} className="text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="mb-2">
+                      <span className="text-sm font-medium text-gray-100">Codebox AI</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    </div>
+                  </div>
+                </motion.div>
               )}
-            </motion.div>
-          ))}
 
-          {loading && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-start gap-2">
-              <div className="w-8 h-8 flex items-center justify-center rounded-full bg-green-500 text-white animate-pulse">
-                <Bot size={16} />
-              </div>
-              <div className="px-3 py-2 rounded-2xl max-w-[60%] text-sm bg-white/10 text-white rounded-bl-none flex gap-1">
-                <span className="w-2 h-2 bg-white/70 rounded-full animate-bounce" />
-                <span className="w-2 h-2 bg-white/70 rounded-full animate-bounce delay-150" />
-                <span className="w-2 h-2 bg-white/70 rounded-full animate-bounce delay-300" />
-              </div>
-            </motion.div>
-          )}
-
-          <div ref={messagesEndRef} />
+              <div ref={messagesEndRef} />
+            </div>
+          </div>
         </div>
 
-        <div className="p-2 sm:p-3 border-t border-white/10 flex items-center gap-2 bg-black/40 backdrop-blur-xl rounded-2xl shadow-inner">
-          <textarea
-            placeholder="Message Codebox AI..."
-            value={text}
-            disabled={loading}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={(e) =>
-              e.key === "Enter" && !e.shiftKey && (e.preventDefault(), handleSend())
-            }
-            rows={1}
-            className="flex-1 resize-none bg-white/10 text-white px-3 py-2 sm:px-4 sm:py-3 rounded-xl outline-none border border-white/10 focus:border-blue-500 transition-all duration-300 placeholder-gray-400 shadow-md text-sm sm:text-base"
-          ></textarea>
-          <button
-            onClick={handleSend}
-            disabled={loading}
-            className="p-3 sm:p-4 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl text-white shadow-lg hover:opacity-90 disabled:opacity-50 transition"
-          >
-            <Send size={18} />
-          </button>
+        {/* Input Area - Fixed at Bottom */}
+        <div className="bg-gray-900/95 backdrop-blur-sm border-t border-gray-700 transition-colors duration-300 flex-shrink-0">
+          <div className="max-w-4xl mx-auto px-4 py-4">
+            <div className="flex  items-end">
+              <div className="flex-1 relative">
+                <textarea
+                  ref={textareaRef}
+                  placeholder="Message Codebox AI..."
+                  value={text}
+                  disabled={loading}
+                  onChange={(e) => setText(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSend();
+                    }
+                  }}
+                  rows={1}
+                  className="w-full resize-none bg-gray-800 border-gray-600 text-gray-100 placeholder-gray-400 focus:border-orange-500 rounded-l-xl px-4 py-3 outline-none focus:ring-1 focus:ring-orange-500 transition-colors"
+                  style={{ minHeight: '48px', maxHeight: '120px' }}
+                />
+              </div>
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={handleSend}
+                disabled={loading || !text.trim()}
+                className={`p-4 mb-1.5 ml-1 ${loading || !text.trim() ? 'bg-gray-800 text-gray-500' : 'bg-gray-700 hover:bg-gray-600 text-gray-200'} disabled:cursor-not-allowed rounded-r-xl transition-colors flex-shrink-0`}
+              >
+                <Send size={15} />
+              </motion.button>
+            </div>
+            <p className="text-xs text-gray-400 mt-2 text-center">
+              Codebox AI can make mistakes. Check important info.
+            </p>
+          </div>
         </div>
       </div>
     </div>

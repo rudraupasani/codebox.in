@@ -36,49 +36,70 @@ const newFeatures = [
 ];
 
 const NewFeatures = () => {
+  // Variants for a staggered entry animation
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    show: { y: 0, opacity: 1, transition: { duration: 0.6 } },
+  };
+
   return (
     <div
       id="new-features"
-      className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-gray-800 text-white flex flex-col items-center py-20 px-6"
+      className="relative min-h-screen bg-neutral-950 text-white flex flex-col items-center py-20 px-6 overflow-hidden"
     >
-      {/* Title */}
-      <motion.h1
-        initial={{ opacity: 0, y: -40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="text-4xl md:text-5xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-300"
-      >
-        Next-Gen Features
-      </motion.h1>
+      {/* Subtle radial gradient background */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500/10 rounded-full blur-[150px] animate-pulse-slow"></div>
 
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3, duration: 0.8 }}
-        className="text-gray-300 text-lg max-w-2xl text-center mb-16"
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        className="relative z-10 flex flex-col items-center max-w-7xl mx-auto"
       >
-        Unlock the future of coding with{" "}
-        <span className="text-purple-400 font-semibold">Codebox AI</span> — built
-        for developers, by developers.
-      </motion.p>
+        {/* Title and Subtitle */}
+        <motion.h1
+          variants={itemVariants}
+          className="text-4xl md:text-6xl font-extrabold mb-4 text-center tracking-tight leading-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-500"
+        >
+          Next-Gen Features
+        </motion.h1>
 
-      {/* Features Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl">
-        {newFeatures.map((f, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: i * 0.2 }}
-            className="p-6 bg-gray-800/60 backdrop-blur-lg rounded-2xl shadow-xl border border-gray-700 hover:scale-105 transition-transform duration-300"
-          >
-            <div className="mb-4">{f.icon}</div>
-            <h3 className="text-xl font-semibold mb-2">{f.title}</h3>
-            <p className="text-gray-400">{f.desc}</p>
-          </motion.div>
-        ))}
-      </div>
+        <motion.p
+          variants={itemVariants}
+          className="text-gray-400 text-lg max-w-2xl text-center mb-16 font-light"
+        >
+          Unlock the future of coding with{" "}
+          <span className="text-blue-400 font-semibold">Codebox AI</span> — built
+          for developers, by developers.
+        </motion.p>
+
+        {/* Features Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
+          {newFeatures.map((f, i) => (
+            <motion.div
+              key={i}
+              variants={itemVariants}
+              whileHover={{ scale: 1.05, y: -5 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className="p-8 bg-neutral-800/50 backdrop-blur-md rounded-3xl shadow-2xl border border-neutral-700 hover:border-blue-500/50 transition-all duration-300"
+            >
+              <div className="mb-4">{f.icon}</div>
+              <h3 className="text-xl md:text-2xl font-semibold mb-2 text-white">{f.title}</h3>
+              <p className="text-gray-400 font-light leading-relaxed">{f.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
     </div>
   );
 };
