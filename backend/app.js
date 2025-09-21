@@ -4,12 +4,13 @@ const axios = require("axios");
 const cors = require("cors");
 require("dotenv").config();
 
+
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 // Load API key from .env
-const API_KEY = "AIzaSyDaLNBNnTOHHYeLcqjpXFZZfjvc4FB-8bs";
+const API_KEY = process.env.GEMINI_API_KEY; // ⚠️ keep secret in .env
 
 // ✅ List Models Route
 app.get("/listmodels", async (req, res) => {
@@ -79,8 +80,9 @@ User request: ${userPrompt}`;
   }
 });
 
-const APII_KEY = "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"; // ⚠️ keep secret in .env
+// ✅ Groq Chat Route
 
+const APII_KEY = process.env.GROK_API_KEY; // ⚠️ keep secret in .env
 
 app.post("/response", async (req, res) => {
   const { prompt: userPrompt } = req.body;
