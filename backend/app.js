@@ -6,13 +6,21 @@ const cron = require("node-cron");
 const fetch = require("node-fetch"); // ✅ for self-ping
 require("dotenv").config();
 
-
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+// 🔧 Clean AI responses
+function cleanResponse(text) {
+  if (!text) return "";
+  // Remove "Codebox AI:" at start (case-insensitive, trims spaces)
+  return text.replace(/^Codebox[\s\u00A0]*AI:\s*/i, "").trim();
+}
+
 // Load API key from .env
-const API_KEY = process.env.GEMINI_API_KEY || "AIzaSyDaLNBNnTOHHYeLcqjpXFZZfjvc4FB-8bs" // ⚠️ keep secret in .env
+const API_KEY =
+  process.env.GEMINI_API_KEY ||
+  "AIzaSyDaLNBNnTOHHYeLcqjpXFZZfjvc4FB-8bs"; // ⚠️ keep secret in .env
 
 // ✅ List Models Route
 app.get("/listmodels", async (req, res) => {
@@ -60,7 +68,7 @@ User request: ${userPrompt}`;
 
     const text = response.data.candidates?.[0]?.content?.parts?.[0]?.text;
     if (text) {
-      res.json({ response: text, model: selectedModel });
+      res.json({ response: cleanResponse(text), model: selectedModel });
     } else {
       res.status(500).json({ error: "No response text returned by Gemini" });
     }
@@ -83,8 +91,9 @@ User request: ${userPrompt}`;
 });
 
 // ✅ Groq Chat Route
-
-const APII_KEY = process.env.GROK_API_KEY || "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"; // ⚠️ keep secret in .env
+const APII_KEY =
+  process.env.GROK_API_KEY ||
+  "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"; // ⚠️ keep secret in .env
 
 app.post("/response", async (req, res) => {
   const { prompt: userPrompt } = req.body;
@@ -105,7 +114,7 @@ Generate code based on user input.
 Translate code from one programming language to another.
 Explain how code works, including step-by-step breakdowns and examples.
 Suggest project templates and examples to help users get started.
-response should not include your name or any references to being an AI model.
+Response should not include your name or any references to being an AI model.
 
 User request: ${userPrompt}`;
 
@@ -114,9 +123,7 @@ User request: ${userPrompt}`;
       "https://api.groq.com/openai/v1/responses",
       {
         model: "openai/gpt-oss-120b",
-        input: [
-          { role: "user", content: finalPrompt },
-        ],
+        input: [{ role: "user", content: finalPrompt }],
       },
       {
         headers: {
@@ -132,35 +139,38 @@ User request: ${userPrompt}`;
     for (const item of outputArray) {
       if (item.content && item.content.length > 0) {
         // Find the first text content
-        const textContent = item.content.find(c => c.type === "output_text" || c.type === "text");
-        if (textContent && textContent.text)
-           {
+        const textContent = item.content.find(
+          (c) => c.type === "output_text" || c.type === "text"
+        );
+        if (textContent && textContent.text) {
           responseData = textContent.text;
           break;
         }
       }
     }
 
-    res.json({ response: responseData });
+    res.json({ response: cleanResponse(responseData) });
   } catch (err) {
     console.error("Groq API Error:", err.response?.data || err.message);
     res.status(500).json({
-      error: err?.response?.data?.error?.message || err.message || "Groq API call failed",
+      error:
+        err?.response?.data?.error?.message ||
+        err.message ||
+        "Groq API call failed",
     });
   }
 });
 
-
-cron.schedule('*/12 * * * *', async () => {
+// ✅ Keep-alive CRON job (every 12 minutes)
+cron.schedule("*/12 * * * *", async () => {
   try {
-    const url = `https://codebox-d3m9.onrender.com/`;
+    const url = `https://codebox-d3m9.onrender.com/`; // replace with your Render URL
     await fetch(url);
     console.log(`[CRON] Pinged ${url} to keep server alive`);
   } catch (err) {
-    console.error('[CRON] Error pinging server:', err);
+    console.error("[CRON] Error pinging server:", err);
   }
 });
-
 
 // ✅ Start server
 const PORT = process.env.PORT || 3000;
