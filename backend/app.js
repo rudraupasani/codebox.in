@@ -162,7 +162,7 @@ User request: ${userPrompt}`;
 });
 
 // ✅ Keep-alive CRON job (every 12 minutes)
-cron.schedule("*/12 * * * *", async () => {
+cron.schedule("0 */12 * * * *", async () => {
   try {
     const url = `https://codebox-d3m9.onrender.com/`; // replace with your Render URL
     await fetch(url);
