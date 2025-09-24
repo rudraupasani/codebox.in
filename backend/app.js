@@ -2,6 +2,8 @@
 const express = require("express");
 const axios = require("axios");
 const cors = require("cors");
+const cron = require("node-cron");
+const fetch = require("node-fetch"); // ✅ for self-ping
 require("dotenv").config();
 
 
@@ -103,6 +105,7 @@ Generate code based on user input.
 Translate code from one programming language to another.
 Explain how code works, including step-by-step breakdowns and examples.
 Suggest project templates and examples to help users get started.
+response should not include your name or any references to being an AI model.
 
 User request: ${userPrompt}`;
 
@@ -144,6 +147,17 @@ User request: ${userPrompt}`;
     res.status(500).json({
       error: err?.response?.data?.error?.message || err.message || "Groq API call failed",
     });
+  }
+});
+
+
+cron.schedule('*/12 * * * *', async () => {
+  try {
+    const url = `https://codebox-d3m9.onrender.com/`;
+    await fetch(url);
+    console.log(`[CRON] Pinged ${url} to keep server alive`);
+  } catch (err) {
+    console.error('[CRON] Error pinging server:', err);
   }
 });
 
