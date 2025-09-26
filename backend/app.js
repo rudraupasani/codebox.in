@@ -164,13 +164,24 @@ User request: ${userPrompt}`;
 // ✅ Keep-alive CRON job (every 12 minutes)
 cron.schedule("0 */12 * * * *", async () => {
   try {
-    const url = `https://codebox-d3m9.onrender.com/`; // replace with your Render URL
+    const url = `https://codebox-d3m9.onrender.com/response`; // replace with your Render URL
     await fetch(url);
     console.log(`[CRON] Pinged ${url} to keep server alive`);
   } catch (err) {
     console.error("[CRON] Error pinging server:", err);
   }
 });
+
+cron.schedule("0 */12 * * * *", async () => {
+  try {
+    const url = `https://codebox-d3m9.onrender.com/chatbot`; // replace with your Render URL
+    await fetch(url);
+    console.log(`[CRON] Pinged ${url} to keep server alive`);
+  } catch (err) {
+    console.error("[CRON] Error pinging server:", err);
+  }
+});
+
 
 // ✅ Start server
 const PORT = process.env.PORT || 3000;
