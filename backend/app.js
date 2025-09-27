@@ -168,17 +168,6 @@ cron.schedule("0 */12 * * * *", async () => {
   }
 });
 
-cron.schedule("0 */12 * * * *", async () => {
-  try {
-    const url = `https://codebox-d3m9.onrender.com/chatbot`; // replace with your Render URL
-    await fetch(url);
-    console.log(`[CRON] Pinged ${url} to keep server alive`);
-  } catch (err) {
-    console.error("[CRON] Error pinging server:", err);
-  }
-});
-
-
 // ✅ Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
