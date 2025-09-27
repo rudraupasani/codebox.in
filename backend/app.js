@@ -18,7 +18,9 @@ function cleanResponse(text) {
 }
 
 // Load API key from .env
-const API_KEY = "AIzaSyDaLNBNnTOHHYeLcqjpXFZZfjvc4FB-8bs"; // ⚠️ keep secret in .env
+const API_KEY =
+  process.env.GEMINI_API_KEY ||
+  "AIzaSyDaLNBNnTOHHYeLcqjpXFZZfjvc4FB-8bs"; // ⚠️ keep secret in .env
 
 // ✅ List Models Route
 app.get("/listmodels", async (req, res) => {
@@ -89,7 +91,7 @@ User request: ${userPrompt}`;
 });
 
 // ✅ Groq Chat Route
-const APII_KEY = "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"; // ⚠️ keep secret in .env
+const APII_KEY ="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"; // ⚠️ keep secret in .env
 
 app.post("/response", async (req, res) => {
   const { prompt: userPrompt } = req.body;
@@ -157,5 +159,28 @@ User request: ${userPrompt}`;
   }
 });
 
+// ✅ Keep-alive CRON job (every 12 minutes)
+cron.schedule("0 */12 * * * *", async () => {
+  try {
+    const url = `https://codebox-d3m9.onrender.com/response`; // replace with your Render URL
+    await fetch(url);
+    console.log(`[CRON] Pinged ${url} to keep server alive`);
+  } catch (err) {
+    console.error("[CRON] Error pinging server:", err);
+  }
+});
+
+cron.schedule("0 */12 * * * *", async () => {
+  try {
+    const url = `https://codebox-d3m9.onrender.com/chatbot`; // replace with your Render URL
+    await fetch(url);
+    console.log(`[CRON] Pinged ${url} to keep server alive`);
+  } catch (err) {
+    console.error("[CRON] Error pinging server:", err);
+  }
+});
+
+
+// ✅ Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));

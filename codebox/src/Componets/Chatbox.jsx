@@ -60,7 +60,7 @@ const ChatPage = () => {
         .map((msg) => `${msg.sender === "user" ? "User" : "Bot"}: ${msg.text}`)
         .join("\n");
 
-      const response = await fetch("https://codebox-d3m9.onrender.com/response", {
+      const response = await fetch("http://localhost:3000/response", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
