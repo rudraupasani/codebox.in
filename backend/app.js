@@ -4,7 +4,9 @@ const axios = require("axios");
 const cors = require("cors");
 const cron = require("node-cron");
 const fetch = require("node-fetch"); // ✅ for self-ping
-require("dotenv").config();
+const env = require("dotenv")
+
+env.config();
 
 const app = express();
 app.use(cors());
@@ -19,9 +21,7 @@ function cleanResponse(text) {
 
 // Load API key from .env
 const API_KEY =
-  process.env.GEMINI_API_KEY ||
-  "AIzaSyDaLNBNnTOHHYeLcqjpXFZZfjvc4FB-8bs"; // ⚠️ keep secret in .env
-
+  process.env.GEMINI_API_KEY
 // ✅ List Models Route
 app.get("/listmodels", async (req, res) => {
   try {
